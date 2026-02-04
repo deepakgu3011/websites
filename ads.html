@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>VAST Pre Roll Demo</title>
+<title>VAST Auto Ads Player</title>
 
 <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
 
@@ -27,9 +27,9 @@ body{
 
 <body>
 
-<h2>VAST Ad Test</h2>
+<h2>VAST Auto Ads Demo</h2>
 
-<button id="playBtn">▶ Play video</button>
+<button id="playBtn">▶ Play Video</button>
 
 <video
   id="videoPlayer"
@@ -44,7 +44,7 @@ body{
   <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
 </video>
 
-<!-- REQUIRED SCRIPTS (ORDER IMPORTANT) -->
+<!-- REQUIRED SCRIPTS -->
 <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
 <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
 <script src="https://unpkg.com/videojs-contrib-ads@6/dist/videojs-contrib-ads.min.js"></script>
@@ -54,25 +54,78 @@ body{
 var player = videojs('videoPlayer');
 
 player.ima({
-  adTagUrl: "https://fantasticcommunity.com/dem/F.zMdDG/NivMZ/GTUH/YesmK9IuGZ/UBlokGPLTCYe2JNsTzYB2/MjD-gdtuNcj_Yz1lNGj/YMwGO/SWZzsoatWx1ypEdJDK0cxT",
-
-  // IMPORTANT for wrapper based VAST
+  adTagUrl: "https://s.magsrv.com/v1/vast.php?idzone=5845292",
   maxRedirects: 10,
-
   debug: true
 });
 
-let adsInitialized = false;
+/* ==========================
+   AUTO ADS BY VIDEO LENGTH
+========================== */
+function setupAutoAdsByDuration(player) {
+  let adSlots = [];
+  let played = new Set();
 
+  player.on('loadedmetadata', () => {
+    const duration = Math.floor(player.duration());
+    let adsCount = 0;
+
+    if (duration >= 600) adsCount = 6;
+    else if (duration >= 360) adsCount = 4;
+    else if (duration >= 180) adsCount = 2;
+    else return;
+
+    const minGap = 40;
+    const startAfter = 15;
+    const endBefore = 15;
+
+    while (adSlots.length < adsCount) {
+      let t = Math.floor(
+        Math.random() * (duration - startAfter - endBefore) + startAfter
+      );
+
+      if (adSlots.every(x => Math.abs(x - t) >= minGap)) {
+        adSlots.push(t);
+      }
+    }
+
+    adSlots.sort((a, b) => a - b);
+    console.log("Ad Slots:", adSlots);
+  });
+
+  player.on('timeupdate', () => {
+    const now = Math.floor(player.currentTime());
+
+    adSlots.forEach(t => {
+      if (!played.has(t) && now >= t) {
+        played.add(t);
+
+        console.log("Midroll Ad at:", t);
+        player.pause();
+        player.ima.initializeAdDisplayContainer();
+        player.ima.requestAds();
+      }
+    });
+  });
+
+  player.on('adend', () => player.play());
+  player.on('adserror', () => player.play());
+}
+
+/* ==========================
+   PLAY BUTTON
+========================== */
 document.getElementById("playBtn").addEventListener("click", function () {
 
-  if (!adsInitialized) {
-    player.ima.initializeAdDisplayContainer();
-    player.ima.requestAds();
-    adsInitialized = true;
-  }
+  // PRE-ROLL
+  player.ima.initializeAdDisplayContainer();
+  player.ima.requestAds();
 
+  // PLAY CONTENT
   player.play();
+
+  // AUTO MID-ROLL ADS
+  setupAutoAdsByDuration(player);
 });
 </script>
 
