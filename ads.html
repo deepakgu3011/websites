@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VAST Pre Mid Post Roll Demo</title>
+
+<link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
+
+<style>
+body{
+  font-family: Arial;
+  background:#111;
+  color:#fff;
+  text-align:center;
+}
+#playBtn{
+  padding:12px 25px;
+  font-size:16px;
+  cursor:pointer;
+  margin-bottom:15px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>VAST Ads (Pre / Mid / Post)</h2>
+
+<button id="playBtn">▶ Play Video</button>
+
+<video
+  id="videoPlayer"
+  class="video-js vjs-default-skin"
+  width="640"
+  height="360"
+  controls
+  preload="auto">
+
+  <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+</video>
+
+<!-- REQUIRED SCRIPTS -->
+<script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+<script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
+<script src="https://unpkg.com/videojs-contrib-ads@6/dist/videojs-contrib-ads.min.js"></script>
+<script src="https://unpkg.com/videojs-ima@1/dist/videojs.ima.min.js"></script>
+
+<script>
+var player = videojs('videoPlayer');
+
+player.ima({
+  adTagUrl:
+  "https://pubads.g.doubleclick.net/gampad/ads?" +
+  "sz=640x480&iu=/124319096/external/single_ad_samples&" +
+  "ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&" +
+  "output=vast&unviewed_position_start=1"
+});
+
+// USER CLICK REQUIRED (AUTOPLAY FIX)
+document.getElementById("playBtn").onclick = function () {
+  player.ima.initializeAdDisplayContainer();
+  player.ima.requestAds();
+  player.play();
+};
+
+// MID-ROLL at 10 seconds
+var midRollPlayed = false;
+
+player.on('timeupdate', function () {
+  if (player.currentTime() > 10 && !midRollPlayed) {
+    midRollPlayed = true;
+    player.ima.requestAds();
+  }
+});
+
+// POST-ROLL
+player.on('ended', function () {
+  player.ima.requestAds();
+});
+</script>
+
+</body>
+</html>
