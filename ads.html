@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>VAST Pre Roll Demo</title>
+<title>Random Mid Roll VAST Ads</title>
 
 <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
 
@@ -27,7 +27,7 @@ body{
 
 <body>
 
-<h2>VAST Ad Test</h2>
+<h2>Random 6 Mid-Roll Ads</h2>
 
 <button id="playBtn">▶ Play Video</button>
 
@@ -44,7 +44,6 @@ body{
   <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
 </video>
 
-<!-- REQUIRED SCRIPTS (ORDER IMPORTANT) -->
 <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
 <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
 <script src="https://unpkg.com/videojs-contrib-ads@6/dist/videojs-contrib-ads.min.js"></script>
@@ -55,24 +54,51 @@ var player = videojs('videoPlayer');
 
 player.ima({
   adTagUrl: "https://fantasticcommunity.com/d.mUF/zCdNGkNCvCZEGWUF/QeRmQ9ou/ZMUrl/kXPnTrYH2uNeTOYr2AMpD_gStUN_jlY/1qN/j/YkwKO/S/ZxsgaVWG1Vp/dnDf0RxG",
-
-  // IMPORTANT for wrapper based VAST
   maxRedirects: 10,
-
   debug: true
 });
 
 let adsInitialized = false;
+let midRollTimes = [];
+let playedMidRolls = [];
 
-document.getElementById("playBtn").addEventListener("click", function () {
+// Generate random mid-roll times
+function generateRandomMidRolls(duration, count = 6) {
+  const times = new Set();
 
-  if (!adsInitialized) {
-    player.ima.initializeAdDisplayContainer();
-    player.ima.requestAds();
-    adsInitialized = true;
+  while (times.size < count) {
+    let t = Math.floor(Math.random() * (duration - 10)) + 5;
+    times.add(t);
   }
 
+  return Array.from(times).sort((a, b) => a - b);
+}
+
+document.getElementById("playBtn").addEventListener("click", function () {
+  if (!adsInitialized) {
+    player.ima.initializeAdDisplayContainer();
+    player.ima.requestAds(); // pre-roll try
+    adsInitialized = true;
+  }
   player.play();
+});
+
+player.on("loadedmetadata", function () {
+  const duration = Math.floor(player.duration());
+  midRollTimes = generateRandomMidRolls(duration, 6);
+  console.log("Random mid-roll times:", midRollTimes);
+});
+
+player.on("timeupdate", function () {
+  const currentTime = Math.floor(player.currentTime());
+
+  midRollTimes.forEach((time) => {
+    if (currentTime >= time && !playedMidRolls.includes(time)) {
+      playedMidRolls.push(time);
+      console.log("Requesting ad at:", time);
+      player.ima.requestAds();
+    }
+  });
 });
 </script>
 
