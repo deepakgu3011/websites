@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>VAST Pre Mid Post Roll Demo</title>
+<title>VAST Pre Roll Demo</title>
 
 <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
 
@@ -19,12 +19,15 @@ body{
   cursor:pointer;
   margin-bottom:15px;
 }
+.video-js{
+  margin:auto;
+}
 </style>
 </head>
 
 <body>
 
-<h2>VAST Ads (Pre / Mid / Post)</h2>
+<h2>VAST Ad Test</h2>
 
 <button id="playBtn">▶ Play Video</button>
 
@@ -34,12 +37,14 @@ body{
   width="640"
   height="360"
   controls
-  preload="auto">
+  preload="auto"
+  playsinline
+  webkit-playsinline>
 
   <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
 </video>
 
-<!-- REQUIRED SCRIPTS -->
+<!-- REQUIRED SCRIPTS (ORDER IMPORTANT) -->
 <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
 <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
 <script src="https://unpkg.com/videojs-contrib-ads@6/dist/videojs-contrib-ads.min.js"></script>
@@ -49,33 +54,25 @@ body{
 var player = videojs('videoPlayer');
 
 player.ima({
-  adTagUrl:
-  "https://pubads.g.doubleclick.net/gampad/ads?" +
-  "sz=640x480&iu=/124319096/external/single_ad_samples&" +
-  "ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&" +
-  "output=vast&unviewed_position_start=1"
+  adTagUrl: "https://fantasticcommunity.com/d.mOFgzcdeGrN/vUZEGcUt/AeHmb9FuCZeU-l/kKPqTzYh2/NCTmY/2fMiD/gotKNTjCY/1KNij/Y_w/OlQD",
+
+  // IMPORTANT for wrapper based VAST
+  maxRedirects: 10,
+
+  debug: true
 });
 
-// USER CLICK REQUIRED (AUTOPLAY FIX)
-document.getElementById("playBtn").onclick = function () {
-  player.ima.initializeAdDisplayContainer();
-  player.ima.requestAds();
-  player.play();
-};
+let adsInitialized = false;
 
-// MID-ROLL at 10 seconds
-var midRollPlayed = false;
+document.getElementById("playBtn").addEventListener("click", function () {
 
-player.on('timeupdate', function () {
-  if (player.currentTime() > 10 && !midRollPlayed) {
-    midRollPlayed = true;
+  if (!adsInitialized) {
+    player.ima.initializeAdDisplayContainer();
     player.ima.requestAds();
+    adsInitialized = true;
   }
-});
 
-// POST-ROLL
-player.on('ended', function () {
-  player.ima.requestAds();
+  player.play();
 });
 </script>
 
