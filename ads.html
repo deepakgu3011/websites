@@ -83,34 +83,40 @@ function setupAutoAdsByDuration(player) {
       let t = Math.floor(
         Math.random() * (duration - startAfter - endBefore) + startAfter
       );
-
       if (adSlots.every(x => Math.abs(x - t) >= minGap)) {
         adSlots.push(t);
       }
     }
 
     adSlots.sort((a, b) => a - b);
-    console.log("Ad Slots:", adSlots);
+    console.log("MIDROLL SLOTS:", adSlots);
   });
 
   player.on('timeupdate', () => {
     const now = Math.floor(player.currentTime());
 
     adSlots.forEach(t => {
-      if (!played.has(t) && now >= t) {
+      if (!played.has(t) && now >= t && !player.ads.isInAdMode()) {
         played.add(t);
 
-        console.log("Midroll Ad at:", t);
-        player.pause();
+        player.ads.startLinearAdMode();   // 👈 YEH LINE
         player.ima.initializeAdDisplayContainer();
         player.ima.requestAds();
       }
     });
   });
 
-  player.on('adend', () => player.play());
-  player.on('adserror', () => player.play());
+  player.on('adend', () => {
+    player.ads.endLinearAdMode(); // 👈 AUR YEH LINE
+    player.play();
+  });
+
+  player.on('adserror', () => {
+    player.ads.endLinearAdMode(); // 👈 AUR YEH LINE
+    player.play();
+  });
 }
+
 
 /* ==========================
    PLAY BUTTON
