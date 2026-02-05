@@ -1,12 +1,13 @@
+</body>
+</html>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Blog with Auto VAST Ads</title>
+<title>Blog with Smart VAST Ads</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Video.js CSS -->
 <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
 
 <style>
@@ -17,14 +18,12 @@ body{
   color:#222;
 }
 
-/* HEADER */
 header{
   background:#0f172a;
   color:#fff;
   padding:15px 20px;
 }
 
-/* BLOG CONTAINER */
 .container{
   max-width:900px;
   margin:30px auto;
@@ -52,11 +51,9 @@ header{
   margin-left:20px;
 }
 
-/* VIDEO EMBED */
 .blog-video{
   max-width:720px;
   margin:35px auto;
-  text-align:center;
 }
 
 .video-js{
@@ -65,17 +62,9 @@ header{
   aspect-ratio:16 / 9;
   border-radius:10px;
 }
-
-/* PLAY BUTTON */
-#playBtn{
-  padding:12px 25px;
-  font-size:16px;
-  cursor:pointer;
-  margin-bottom:15px;
-}
 </style>
-
 </head>
+
 <body>
 
 <header>
@@ -88,10 +77,8 @@ header{
   <div class="meta">By Tech Tutorials • Feb 2026 • 5 min read</div>
 
   <div class="article-content">
-    <p>
-      Applying for a voter ID card online is a simple and convenient process.
-      Citizens can register digitally through official government portals.
-    </p>
+
+    <p>Applying for a voter ID card online is simple and fully digital.</p>
 
     <h3>Who Can Apply?</h3>
     <ul>
@@ -100,11 +87,8 @@ header{
       <li>Valid address proof</li>
     </ul>
 
-    <!-- 🔥 VIDEO + VAST ADS -->
+    <!-- VIDEO -->
     <div class="blog-video">
-
-      <button id="playBtn">▶ Play Video</button>
-
       <video
         id="videoPlayer"
         class="video-js vjs-default-skin vjs-big-play-centered"
@@ -115,13 +99,9 @@ header{
 
         <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
       </video>
-
     </div>
 
-    <p>
-      After submission, the application is verified by election authorities.
-      Once approved, the voter ID card can be downloaded or delivered.
-    </p>
+    <p>After verification, voter ID can be downloaded online.</p>
 
   </div>
 </div>
@@ -135,6 +115,9 @@ header{
 <script>
 var player = videojs('videoPlayer');
 
+/* ==========================
+   IMA SETUP
+========================== */
 player.ima({
   adTagUrl: "https://fantasticcommunity.com/dem/F.zMdDG/NivMZ/GTUH/YesmK9IuGZ/UBlokGPLTCYe2JNsTzYB2/MjD-gdtuNcj_Yz1lNGj/YMwGO/SWZzsoatWx1ypEdJDK0cxT",
   maxRedirects: 10,
@@ -142,7 +125,15 @@ player.ima({
 });
 
 /* ==========================
-   AUTO ADS BY VIDEO LENGTH
+   PRE-ROLL ON USER PLAY
+========================== */
+player.one('play', function () {
+  player.ima.initializeAdDisplayContainer();
+  player.ima.requestAds();
+});
+
+/* ==========================
+   AUTO MID-ROLL BY DURATION
 ========================== */
 function setupAutoAdsByDuration(player) {
   let adSlots = [];
@@ -171,7 +162,6 @@ function setupAutoAdsByDuration(player) {
     }
 
     adSlots.sort((a, b) => a - b);
-    console.log("MIDROLL SLOTS:", adSlots);
   });
 
   player.on('timeupdate', () => {
@@ -180,103 +170,51 @@ function setupAutoAdsByDuration(player) {
     adSlots.forEach(t => {
       if (!played.has(t) && now >= t && !player.ads.isInAdMode()) {
         played.add(t);
-
-        player.ads.startLinearAdMode();
-        player.ima.initializeAdDisplayContainer();
-        player.ima.requestAds();
+        triggerAd();
       }
     });
-  });
-
-  player.on('adend', () => {
-    player.ads.endLinearAdMode();
-    player.play();
-  });
-
-  player.on('adserror', () => {
-    player.ads.endLinearAdMode();
-    player.play();
   });
 }
 
 /* ==========================
-   PLAY BUTTON
+   SEEK-BASED ADS (3+ SEEKS)
 ========================== */
-document.getElementById("playBtn").addEventListener("click", function () {
+let seekCount = 0;
+let seekAdTriggered = false;
 
-  player.ima.initializeAdDisplayContainer();
-  player.ima.requestAds();   // preroll
-  player.play();
+player.on('seeked', function () {
+  seekCount++;
 
-  setupAutoAdsByDuration(player);
+  if (seekCount >= 3 && !seekAdTriggered && !player.ads.isInAdMode()) {
+    seekAdTriggered = true;
+    triggerAd();
+  }
 });
+
+/* ==========================
+   AD TRIGGER SAFE FUNCTION
+========================== */
+function triggerAd(){
+  player.ads.startLinearAdMode();
+  player.ima.initializeAdDisplayContainer();
+  player.ima.requestAds();
+}
+
+/* ==========================
+   AD END / ERROR
+========================== */
+player.on('adend', function () {
+  player.ads.endLinearAdMode();
+  player.play();
+});
+
+player.on('adserror', function () {
+  player.ads.endLinearAdMode();
+  player.play();
+});
+
+setupAutoAdsByDuration(player);
 </script>
-
-</body>
-</html>
-    </p>
-
-    <h3>Who Can Apply?</h3>
-    <ul>
-      <li>Indian citizen</li>
-      <li>Age 18+</li>
-      <li>Valid address proof</li>
-    </ul>
-
-    <!-- 🔥 EMBEDDED VIDEO WITH VAST -->
-    <div class="blog-video-embed">
-      <video
-        id="blogVastVideo"
-        class="video-js vjs-default-skin vjs-big-play-centered"
-        controls
-        preload="auto"
-        playsinline
-      >
-        <source src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4" type="video/mp4">
-      </video>
-    </div>
-
-    <p>
-      Once submitted, your application is verified by the election authorities.
-      You can track the status online and download your voter slip once approved.
-    </p>
-
-  </div>
-
-</div>
-
-<footer>
-  © 2026 Tech Tutorials
-</footer>
-
-<!-- VAST / IMA SCRIPT -->
-<script>
-  const player = videojs('blogVastVideo');
-
-  player.ready(function () {
-
-    player.ima({
-      adTagUrl: 'https://fantasticcommunity.com/dXm.F/zzd/GhNdvWZpGfUb/WewmH9AuIZlUjlBkoPLTwYs2DNwTsY/2HMjDGgGt/NgjgYb1xNajUYJwxO/SwZuskamW-1DpddLDs0bxDp',
-      timeout: 8000,
-      prerollTimeout: 8000,
-      debug: false   // ❗ debug false = no scary logs
-    });
-
-    player.one('play', function () {
-      player.ima.initializeAdDisplayContainer();
-      player.ima.requestAds();
-    });
-
-    // 🔥 IMPORTANT: handle ad error safely
-    player.on('adserror', function () {
-      console.log('VAST no-fill / error → playing content');
-      player.ima.endAdMode();
-      player.play();
-    });
-
-  });
-</script>
-
 
 </body>
 </html>
