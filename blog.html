@@ -29,7 +29,7 @@ body{
 
 <h2>VAST Auto Ads Demo</h2>
 
-<button id="playBtn">▶ Play Video</button>
+
 
 <video
   id="videoPlayer"
@@ -117,22 +117,7 @@ function setupAutoAdsByDuration(player) {
   });
 }
 
-
-/* ==========================
-   PLAY BUTTON
-========================== */
-document.getElementById("playBtn").addEventListener("click", function () {
-
-  // PRE-ROLL
-  player.ima.initializeAdDisplayContainer();
-  player.ima.requestAds();
-
-  // PLAY CONTENT
-  player.play();
-
-  // AUTO MID-ROLL ADS
-  setupAutoAdsByDuration(player);
-});
+  
 </script>
 
 </body>
