@@ -125,24 +125,6 @@ player.on('play', function () {
 });
 
 /* ==========================
-   SEEK BASED ADS (3 SEEKS)
-========================== */
-let seekCount = 0;
-let seekAdDone = false;
-
-player.on('seeked', function () {
-  seekCount++;
-
-  if (seekCount >= 3 && !seekAdDone) {
-    seekAdDone = true;
-
-    player.pause();
-    player.ima.initializeAdDisplayContainer();
-    player.ima.requestAds();
-  }
-});
-
-/* ==========================
    FAILSAFE
 ========================== */
 player.on('adserror', function () {
