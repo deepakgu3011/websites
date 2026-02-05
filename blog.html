@@ -1,102 +1,48 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Blog Video with Preroll + Midroll Ads</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAST Auto Ads Player</title>
 
 <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
 
 <style>
 body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#f4f6f8;
-  color:#222;
-}
-
-header{
-  background:#0f172a;
+  font-family: Arial;
+  background:#111;
   color:#fff;
-  padding:15px 20px;
+  text-align:center;
 }
-
-.container{
-  max-width:900px;
-  margin:30px auto;
-  padding:20px;
-  background:#fff;
-  border-radius:8px;
-}
-
-.article-title{
-  font-size:28px;
-}
-
-.meta{
-  color:#666;
-  font-size:14px;
-  margin-bottom:20px;
-}
-
-.article-content p{
-  line-height:1.7;
+#playBtn{
+  padding:12px 25px;
+  font-size:16px;
+  cursor:pointer;
   margin-bottom:15px;
 }
-
-.blog-video{
-  max-width:720px;
-  margin:35px auto;
-}
-
 .video-js{
-  width:100% !important;
-  height:auto !important;
-  aspect-ratio:16 / 9;
-  border-radius:10px;
+  margin:auto;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <h2>Tech Tutorials Blog</h2>
-</header>
+<h2>VAST Auto Ads Demo</h2>
 
-<div class="container">
+<button id="playBtn">▶ Play Video</button>
 
-  <h1 class="article-title">How to Apply Voter ID Online</h1>
-  <div class="meta">By Tech Tutorials • Feb 2026 • 5 min read</div>
+<video
+  id="videoPlayer"
+  class="video-js vjs-default-skin"
+  width="640"
+  height="360"
+  controls
+  preload="auto"
+  playsinline
+  webkit-playsinline>
 
-  <div class="article-content">
-
-    <p>
-      Applying for a voter ID card online is a simple and digital process.
-    </p>
-
-    <!-- VIDEO -->
-    <div class="blog-video">
-      <video
-        id="videoPlayer"
-        class="video-js vjs-default-skin vjs-big-play-centered"
-        controls
-        preload="metadata"
-        playsinline
-        webkit-playsinline>
-
-        <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
-      </video>
-    </div>
-
-    <p>
-      After verification, the voter ID card can be downloaded online.
-    </p>
-
-  </div>
-</div>
+  <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+</video>
 
 <!-- REQUIRED SCRIPTS -->
 <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
@@ -107,58 +53,85 @@ header{
 <script>
 var player = videojs('videoPlayer');
 
-/* ==========================
-   IMA CONFIG
-========================== */
 player.ima({
   adTagUrl: "https://fantasticcommunity.com/dem/F.zMdDG/NivMZ/GTUH/YesmK9IuGZ/UBlokGPLTCYe2JNsTzYB2/MjD-gdtuNcj_Yz1lNGj/YMwGO/SWZzsoatWx1ypEdJDK0cxT",
   maxRedirects: 10,
-  debug: false
+  debug: true
 });
 
 /* ==========================
-   PREROLL (ON PLAY)
+   AUTO ADS BY VIDEO LENGTH
 ========================== */
-let prerollDone = false;
+function setupAutoAdsByDuration(player) {
+  let adSlots = [];
+  let played = new Set();
 
-player.on('play', function () {
-  if (!prerollDone) {
-    prerollDone = true;
+  player.on('loadedmetadata', () => {
+    const duration = Math.floor(player.duration());
+    let adsCount = 0;
 
-    player.pause(); // mobile-safe
-    player.ima.initializeAdDisplayContainer();
-    player.ima.requestAds();
-  }
-});
+    if (duration >= 600) adsCount = 6;
+    else if (duration >= 360) adsCount = 4;
+    else if (duration >= 180) adsCount = 2;
+    else return;
 
-/* ==========================
-   MIDROLL (ONCE AT 50%)
-========================== */
-let midrollDone = false;
+    const minGap = 40;
+    const startAfter = 15;
+    const endBefore = 15;
 
-player.on('timeupdate', function () {
-  if (!midrollDone && player.duration()) {
-    const percent = player.currentTime() / player.duration();
-
-    if (percent >= 0.5) {
-      midrollDone = true;
-
-      player.pause();
-      player.ima.initializeAdDisplayContainer();
-      player.ima.requestAds();
+    while (adSlots.length < adsCount) {
+      let t = Math.floor(
+        Math.random() * (duration - startAfter - endBefore) + startAfter
+      );
+      if (adSlots.every(x => Math.abs(x - t) >= minGap)) {
+        adSlots.push(t);
+      }
     }
-  }
-});
+
+    adSlots.sort((a, b) => a - b);
+    console.log("MIDROLL SLOTS:", adSlots);
+  });
+
+  player.on('timeupdate', () => {
+    const now = Math.floor(player.currentTime());
+
+    adSlots.forEach(t => {
+      if (!played.has(t) && now >= t && !player.ads.isInAdMode()) {
+        played.add(t);
+
+        player.ads.startLinearAdMode();   // 👈 YEH LINE
+        player.ima.initializeAdDisplayContainer();
+        player.ima.requestAds();
+      }
+    });
+  });
+
+  player.on('adend', () => {
+    player.ads.endLinearAdMode(); // 👈 AUR YEH LINE
+    player.play();
+  });
+
+  player.on('adserror', () => {
+    player.ads.endLinearAdMode(); // 👈 AUR YEH LINE
+    player.play();
+  });
+}
+
 
 /* ==========================
-   FAILSAFE
+   PLAY BUTTON
 ========================== */
-player.on('adserror', function () {
-  player.play();
-});
+document.getElementById("playBtn").addEventListener("click", function () {
 
-player.on('adend', function () {
+  // PRE-ROLL
+  player.ima.initializeAdDisplayContainer();
+  player.ima.requestAds();
+
+  // PLAY CONTENT
   player.play();
+
+  // AUTO MID-ROLL ADS
+  setupAutoAdsByDuration(player);
 });
 </script>
 
