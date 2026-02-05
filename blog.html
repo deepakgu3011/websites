@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Blog + VAST (Mobile Safe)</title>
+<title>Blog Video with VAST Ads</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- Video.js CSS -->
 <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
 
 <style>
@@ -71,8 +72,13 @@ header{
   <div class="meta">By Tech Tutorials • Feb 2026 • 5 min read</div>
 
   <div class="article-content">
-    <p>Applying for a voter ID card online is easy and digital.</p>
 
+    <p>
+      Applying for a voter ID card online is a simple and digital process.
+      Citizens can apply directly through official portals.
+    </p>
+
+    <!-- VIDEO PLAYER -->
     <div class="blog-video">
       <video
         id="videoPlayer"
@@ -86,7 +92,10 @@ header{
       </video>
     </div>
 
-    <p>After verification, voter ID can be downloaded online.</p>
+    <p>
+      After verification, the voter ID can be downloaded or delivered by post.
+    </p>
+
   </div>
 </div>
 
@@ -103,6 +112,41 @@ var player = videojs('videoPlayer');
    IMA CONFIG
 ========================== */
 player.ima({
+  adTagUrl: "https://fantasticcommunity.com/dem/F.zMdDG/NivMZ/GTUH/YesmK9IuGZ/UBlokGPLTCYe2JNsTzYB2/MjD-gdtuNcj_Yz1lNGj/YMwGO/SWZzsoatWx1ypEdJDK0cxT",
+  maxRedirects: 10,
+  debug: false
+});
+
+/* ==========================
+   NORMAL PREROLL (SAFE)
+========================== */
+let adsRequested = false;
+
+player.on('play', function () {
+  if (!adsRequested) {
+    adsRequested = true;
+
+    // Mobile-safe flow
+    player.pause();
+    player.ima.initializeAdDisplayContainer();
+    player.ima.requestAds();
+  }
+});
+
+/* ==========================
+   FAILSAFE
+========================== */
+player.on('aderror', function () {
+  player.play();
+});
+
+player.on('adend', function () {
+  player.play();
+});
+</script>
+
+</body>
+</html>
   adTagUrl: "https://fantasticcommunity.com/dem/F.zMdDG/NivMZ/GTUH/YesmK9IuGZ/UBlokGPLTCYe2JNsTzYB2/MjD-gdtuNcj_Yz1lNGj/YMwGO/SWZzsoatWx1ypEdJDK0cxT",
   maxRedirects: 10,
   debug: false
