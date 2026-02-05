@@ -145,20 +145,27 @@ footer{
   player.ready(function () {
 
     player.ima({
-      adTagUrl: 'https://fantasticcommunity.com/dem/F.zMdDG/NivMZ/GTUH/YesmK9IuGZ/UBlokGPLTCYe2JNsTzYB2/MjD-gdtuNcj_Yz1lNGj/YMwGO/SWZzsoatWx1ypEdJDK0cxT',
+      adTagUrl: 'https://fantasticcommunity.com/dXm.F/zzd/GhNdvWZpGfUb/WewmH9AuIZlUjlBkoPLTwYs2DNwTsY/2HMjDGgGt/NgjgYb1xNajUYJwxO/SwZuskamW-1DpddLDs0bxDp',
       timeout: 8000,
       prerollTimeout: 8000,
-      debug: true
+      debug: false   // ❗ debug false = no scary logs
     });
 
-    // Mobile + desktop safe
     player.one('play', function () {
       player.ima.initializeAdDisplayContainer();
       player.ima.requestAds();
     });
 
+    // 🔥 IMPORTANT: handle ad error safely
+    player.on('adserror', function () {
+      console.log('VAST no-fill / error → playing content');
+      player.ima.endAdMode();
+      player.play();
+    });
+
   });
 </script>
+
 
 </body>
 </html>
