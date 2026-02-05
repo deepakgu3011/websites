@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>How to Apply Voter ID Online</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Video.js CSS -->
+<link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#f4f6f8;
+  color:#222;
+}
+
+header{
+  background:#0f172a;
+  color:#fff;
+  padding:15px 20px;
+}
+
+header h2{
+  margin:0;
+}
+
+.container{
+  max-width:900px;
+  margin:30px auto;
+  padding:20px;
+  background:#fff;
+  border-radius:8px;
+}
+
+.article-title{
+  font-size:28px;
+  margin-bottom:10px;
+}
+
+.meta{
+  color:#666;
+  font-size:14px;
+  margin-bottom:20px;
+}
+
+.article-content p{
+  line-height:1.7;
+  margin-bottom:15px;
+}
+
+.article-content ul{
+  margin-left:20px;
+}
+
+/* BLOG VIDEO EMBED */
+.blog-video-embed{
+  max-width:720px;
+  margin:40px auto;
+}
+
+.blog-video-embed .video-js{
+  width:100% !important;
+  height:auto !important;
+  aspect-ratio:16 / 9;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+footer{
+  text-align:center;
+  padding:15px;
+  font-size:14px;
+  color:#666;
+}
+</style>
+
+<!-- Video.js -->
+<script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
+
+<!-- Google IMA SDK -->
+<script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+
+<!-- Video.js IMA Plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-ima/1.10.1/videojs.ima.min.js"></script>
+
+</head>
+<body>
+
+<header>
+  <h2>Tech Tutorials Blog</h2>
+</header>
+
+<div class="container">
+
+  <h1 class="article-title">How to Apply Voter ID Online</h1>
+  <div class="meta">By Tech Tutorials • Feb 2026 • 5 min read</div>
+
+  <div class="article-content">
+
+    <p>
+      Applying for a voter ID card online is a simple and convenient process.
+      The Government of India allows citizens to register digitally.
+    </p>
+
+    <h3>Who Can Apply?</h3>
+    <ul>
+      <li>Indian citizen</li>
+      <li>Age 18+</li>
+      <li>Valid address proof</li>
+    </ul>
+
+    <!-- 🔥 EMBEDDED VIDEO WITH VAST -->
+    <div class="blog-video-embed">
+      <video
+        id="blogVastVideo"
+        class="video-js vjs-default-skin vjs-big-play-centered"
+        controls
+        preload="auto"
+        playsinline
+      >
+        <source src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4" type="video/mp4">
+      </video>
+    </div>
+
+    <p>
+      Once submitted, your application is verified by the election authorities.
+      You can track the status online and download your voter slip once approved.
+    </p>
+
+  </div>
+
+</div>
+
+<footer>
+  © 2026 Tech Tutorials
+</footer>
+
+<!-- VAST / IMA SCRIPT -->
+<script>
+  const player = videojs('blogVastVideo');
+
+  player.ready(function () {
+
+    player.ima({
+      adTagUrl: 'https://fantasticcommunity.com/dem/F.zMdDG/NivMZ/GTUH/YesmK9IuGZ/UBlokGPLTCYe2JNsTzYB2/MjD-gdtuNcj_Yz1lNGj/YMwGO/SWZzsoatWx1ypEdJDK0cxT',
+      timeout: 8000,
+      prerollTimeout: 8000,
+      debug: true
+    });
+
+    // Mobile + desktop safe
+    player.one('play', function () {
+      player.ima.initializeAdDisplayContainer();
+      player.ima.requestAds();
+    });
+
+  });
+</script>
+
+</body>
+</html>
