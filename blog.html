@@ -2,11 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Blog with Auto VAST Ads</title>
+<title>Blog Video with VAST Ads</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Video.js CSS -->
 <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
 
 <style>
@@ -17,14 +16,12 @@ body{
   color:#222;
 }
 
-/* HEADER */
 header{
   background:#0f172a;
   color:#fff;
   padding:15px 20px;
 }
 
-/* BLOG CONTAINER */
 .container{
   max-width:900px;
   margin:30px auto;
@@ -48,15 +45,9 @@ header{
   margin-bottom:15px;
 }
 
-.article-content ul{
-  margin-left:20px;
-}
-
-/* VIDEO EMBED */
 .blog-video{
   max-width:720px;
   margin:35px auto;
-  text-align:center;
 }
 
 .video-js{
@@ -65,17 +56,9 @@ header{
   aspect-ratio:16 / 9;
   border-radius:10px;
 }
-
-/* PLAY BUTTON */
-#playBtn{
-  padding:12px 25px;
-  font-size:16px;
-  cursor:pointer;
-  margin-bottom:15px;
-}
 </style>
-
 </head>
+
 <body>
 
 <header>
@@ -89,22 +72,72 @@ header{
 
   <div class="article-content">
     <p>
-      Applying for a voter ID card online is a simple and convenient process.
-      Citizens can register digitally through official government portals.
+      Applying for a voter ID card online is a simple and digital process.
     </p>
 
-    <h3>Who Can Apply?</h3>
-    <ul>
-      <li>Indian citizen</li>
-      <li>Age 18+</li>
-      <li>Valid address proof</li>
-    </ul>
-
-    <!-- 🔥 VIDEO + VAST ADS -->
+    <!-- VIDEO PLAYER -->
     <div class="blog-video">
+      <video
+        id="videoPlayer"
+        class="video-js vjs-default-skin vjs-big-play-centered"
+        controls
+        preload="metadata"
+        playsinline
+        webkit-playsinline>
 
-      <button id="playBtn">▶ Play Video</button>
+        <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+      </video>
+    </div>
 
+    <p>
+      After verification, the voter ID card can be downloaded online.
+    </p>
+  </div>
+
+</div>
+
+<!-- REQUIRED SCRIPTS -->
+<script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+<script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
+<script src="https://unpkg.com/videojs-contrib-ads@6/dist/videojs-contrib-ads.min.js"></script>
+<script src="https://unpkg.com/videojs-ima@1/dist/videojs.ima.min.js"></script>
+
+<script>
+var player = videojs('videoPlayer');
+
+/* IMA CONFIG */
+player.ima({
+  adTagUrl: "https://fantasticcommunity.com/dem/F.zMdDG/NivMZ/GTUH/YesmK9IuGZ/UBlokGPLTCYe2JNsTzYB2/MjD-gdtuNcj_Yz1lNGj/YMwGO/SWZzsoatWx1ypEdJDK0cxT",
+  maxRedirects: 10,
+  debug: false
+});
+
+/* ✅ PREROLL ON VIDEO PLAY BUTTON */
+let adRequested = false;
+
+player.on('play', function () {
+  if (!adRequested) {
+    adRequested = true;
+
+    // mobile-safe flow
+    player.pause();
+    player.ima.initializeAdDisplayContainer();
+    player.ima.requestAds();
+  }
+});
+
+/* FAILSAFE */
+player.on('adserror', function () {
+  player.play();
+});
+
+player.on('adend', function () {
+  player.play();
+});
+</script>
+
+</body>
+</html>
       <video
         id="videoPlayer"
         class="video-js vjs-default-skin vjs-big-play-centered"
