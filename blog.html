@@ -1,10 +1,8 @@
-</body>
-</html>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Blog with Smart VAST Ads</title>
+<title>Blog + VAST (Mobile Safe)</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -47,10 +45,6 @@ header{
   margin-bottom:15px;
 }
 
-.article-content ul{
-  margin-left:20px;
-}
-
 .blog-video{
   max-width:720px;
   margin:35px auto;
@@ -77,23 +71,14 @@ header{
   <div class="meta">By Tech Tutorials • Feb 2026 • 5 min read</div>
 
   <div class="article-content">
+    <p>Applying for a voter ID card online is easy and digital.</p>
 
-    <p>Applying for a voter ID card online is simple and fully digital.</p>
-
-    <h3>Who Can Apply?</h3>
-    <ul>
-      <li>Indian citizen</li>
-      <li>Age 18+</li>
-      <li>Valid address proof</li>
-    </ul>
-
-    <!-- VIDEO -->
     <div class="blog-video">
       <video
         id="videoPlayer"
         class="video-js vjs-default-skin vjs-big-play-centered"
         controls
-        preload="auto"
+        preload="metadata"
         playsinline
         webkit-playsinline>
 
@@ -102,7 +87,75 @@ header{
     </div>
 
     <p>After verification, voter ID can be downloaded online.</p>
+  </div>
+</div>
 
+<!-- REQUIRED SCRIPTS -->
+<script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+<script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
+<script src="https://unpkg.com/videojs-contrib-ads@6/dist/videojs-contrib-ads.min.js"></script>
+<script src="https://unpkg.com/videojs-ima@1/dist/videojs.ima.min.js"></script>
+
+<script>
+var player = videojs('videoPlayer');
+
+/* ==========================
+   IMA CONFIG
+========================== */
+player.ima({
+  adTagUrl: "https://fantasticcommunity.com/dem/F.zMdDG/NivMZ/GTUH/YesmK9IuGZ/UBlokGPLTCYe2JNsTzYB2/MjD-gdtuNcj_Yz1lNGj/YMwGO/SWZzsoatWx1ypEdJDK0cxT",
+  maxRedirects: 10,
+  debug: false
+});
+
+/* ==========================
+   MOBILE SAFE PREROLL
+========================== */
+let prerollDone = false;
+
+player.on('play', function () {
+  if (!prerollDone) {
+    prerollDone = true;
+
+    // MUST be inside user gesture
+    player.pause();
+    player.ima.initializeAdDisplayContainer();
+    player.ima.requestAds();
+  }
+});
+
+/* ==========================
+   SEEK BASED ADS (3 SEEKS)
+========================== */
+let seekCount = 0;
+let seekAdDone = false;
+
+player.on('seeked', function () {
+  seekCount++;
+
+  if (seekCount >= 3 && !seekAdDone) {
+    seekAdDone = true;
+
+    player.pause();
+    player.ima.initializeAdDisplayContainer();
+    player.ima.requestAds();
+  }
+});
+
+/* ==========================
+   FAILSAFE
+========================== */
+player.on('adserror', function () {
+  player.play();
+});
+
+player.on('adend', function () {
+  player.play();
+});
+</script>
+
+</body>
+</html>
   </div>
 </div>
 
